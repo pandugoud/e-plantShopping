@@ -1,252 +1,89 @@
-/* Reset some default styles */
-body, h1, ul {
-    margin: 0;
-    padding: 0;
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem } from "../redux/CartSlice";
+import "./App.css";
+
+const plants = [
+  // Aromatic Plants
+  { name: "Basil", cost: "$5", category: "Aromatic", image: "/images/basil.jpg" },
+  { name: "Mint", cost: "$4", category: "Aromatic", image: "/images/mint.jpg" },
+  { name: "Lavender", cost: "$6", category: "Aromatic", image: "/images/lavender.jpg" },
+  { name: "Rosemary", cost: "$7", category: "Aromatic", image: "/images/rosemary.jpg" },
+  { name: "Thyme", cost: "$3", category: "Aromatic", image: "/images/thyme.jpg" },
+  { name: "Oregano", cost: "$4", category: "Aromatic", image: "/images/oregano.jpg" },
+
+  // Medicinal Plants
+  { name: "Aloe Vera", cost: "$10", category: "Medicinal", image: "/images/aloe.jpg" },
+  { name: "Tulsi", cost: "$8", category: "Medicinal", image: "/images/tulsi.jpg" },
+  { name: "Neem", cost: "$12", category: "Medicinal", image: "/images/neem.jpg" },
+  { name: "Chamomile", cost: "$9", category: "Medicinal", image: "/images/chamomile.jpg" },
+  { name: "Ginseng", cost: "$15", category: "Medicinal", image: "/images/ginseng.jpg" },
+  { name: "Echinacea", cost: "$13", category: "Medicinal", image: "/images/echinacea.jpg" },
+
+  // Decorative Plants
+  { name: "Fern", cost: "$8", category: "Decorative", image: "/images/fern.jpg" },
+  { name: "Orchid", cost: "$20", category: "Decorative", image: "/images/orchid.jpg" },
+  { name: "Peace Lily", cost: "$18", category: "Decorative", image: "/images/peacelily.jpg" },
+  { name: "Snake Plant", cost: "$15", category: "Decorative", image: "/images/snakeplant.jpg" },
+  { name: "Spider Plant", cost: "$12", category: "Decorative", image: "/images/spiderplant.jpg" },
+  { name: "Cactus", cost: "$10", category: "Decorative", image: "/images/cactus.jpg" },
+];
+
+function ProductList() {
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
+
+  // Calculate total items in cart
+  const totalQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+  const handleAdd = (plant) => {
+    dispatch(addItem(plant));
+  };
+
+  const categories = ["Aromatic", "Medicinal", "Decorative"];
+
+  return (
+    <div>
+      <nav style={{ backgroundColor: "green", padding: "10px", color: "white" }}>
+        <span>Paradise Nursery</span> | 
+        <span style={{ marginLeft: "10px" }}>Plants</span> | 
+        <span style={{ marginLeft: "10px" }}>Cart ({totalQuantity})</span>
+      </nav>
+
+      {categories.map((cat) => (
+        <div key={cat}>
+          <h2>{cat} Plants</h2>
+          <div style={{ display: "flex", flexWrap: "wrap" }}>
+            {plants
+              .filter((p) => p.category === cat)
+              .map((plant) => {
+                const inCart = cartItems.find((i) => i.name === plant.name);
+                return (
+                  <div
+                    key={plant.name}
+                    style={{
+                      border: "1px solid gray",
+                      borderRadius: "8px",
+                      margin: "10px",
+                      padding: "10px",
+                      width: "150px",
+                      textAlign: "center",
+                    }}
+                  >
+                    <img src={plant.image} alt={plant.name} width={120} />
+                    <h4>{plant.name}</h4>
+                    <p>{plant.cost}</p>
+                    <button onClick={() => handleAdd(plant)} disabled={!!inCart}>
+                      {inCart ? "Added to Cart" : "Add to Cart"}
+                    </button>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
-/* Set a background color */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-}
-
-/* Navbar */
-.navbar {
-    background-color: #4CAF50;
-    color: #fff!important;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 20px;
-}
-
-.navbar .ul {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 1100px;
-}
-
-.navbar li {
-    margin-right: 30px;
-}
-
-.navbar .ul div a {
-    color: white;
-    font-size: 30px;
-    text-decoration: none;
-   
-}
-
-/* Product Grid */
-.product-grid {
-    display:flex;
-    flex-direction: column;
-    width: 100vw;
-    align-items: center;
-    justify-content: center;
-}
-.product-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 50px;
-    /* background-color: pink; */
-    /* justify-content: space-between; */
-    padding: 20px;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Product Card */
-.product-card {
-    flex: 0 0 calc(33.33% - 20px); /* Adjust width for 3 cards per row with 20px gap */
-    max-width: calc(26.33% - 20px); /* Adjust max-width for 3 cards per row with 20px gap */
-    margin-bottom: 20px;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: center;
-    position: relative;
-    
-    gap: 20px;
-}
-
-/* Pseudo-classes - Hover effect on product button */
-.product-card:hover {
-    transform: scale(1.05);
-    transition: transform 0.3s ease-in-out;
-    z-index: 1;
-}
-
-.product-title {
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.product-price {
-    color: #e74c3c;
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-}
-
-.product-image {
-    max-width: 100%;
-    height: 200px; /* Adjust height for better consistency */
-}
-
-.product-button {
-    background-color: #e74c3c;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-    margin-top: 10px;
-}
-
-.product-button:hover {
-    background-color: #c0392b;
-}
-
-/* Pseudo-elements - Sale badge */
-.product-card::before {
-    content: "SALE";
-    background-color: #e74c3c;
-    color: #fff;
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 5px 10px;
-    border-radius: 0 0 0 5px;
-}
-.tag_home_link{
-    display: flex;
-    /* background-color: red; */
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-left: 50px;
-    color: white;
-    text-decoration: none;
-    font-size: 20px;
-}
-.tag_home_link h3{
-    font-size: 30px;
-}
-.tag a{
-    text-decoration: none;
-}
-.tag {
-    width: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.tag img {
-    height: 70px;
-    width: 70px;
-    border-radius: 70%;
-    
-}
-
-.luxury {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 650px;
-    font-size: 19px;
-}
-.cart{
-    color: white;
-    display: flex;
-}
-.cart_quantity_count{
-    margin-top: 16px;
-    /* background-color: red; */
-    margin-left: 27px;
-    position: absolute;
-    font-size: 29px;
-
-}
-.plantname_heading{
-   display: flex;
-   align-items: center;
-   justify-content: center;
-    /* background-color: yellow; */
-}
-.plant_heading{
-    width: 400px;
-    text-align: center;
-    margin: 20px;
-    border: 1px solid rgb(5, 4, 4);
-    border-left: none;
-    border-right: none;
-
-    
-}
-/* Add Media Query for responsiveness */
-@media (max-width: 768px) {
-    .product-card {
-        flex: 1 1 calc(50% - 20px); /* Adjust width for 2 cards per row with 20px gap on smaller screens */
-        max-width: calc(50% - 20px); /* Adjust max-width for 2 cards per row with 20px gap on smaller screens */
-    }
-}
-/* ProductList.css */
-
-.product-button {
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    transition-duration: 0.4s;
-    cursor: pointer;
-  }
-  
-  .product-button:hover {
-    background-color: #45a049;
-  }
-  
-  .product-button.added-to-cart {
-    background-color: grey; /* Grey when product is added */
-  }
-  @media (max-width: 1200px) {
-    .product-card {
-      flex: 1 1 calc(33.33% - 20px); /* Adjust width for 3 cards per row with 20px gap on medium screens */
-      max-width: calc(33.33% - 20px); /* Adjust max-width for 3 cards per row with 20px gap on medium screens */
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .product-card {
-      flex: 1 1 calc(50% - 20px); /* Adjust width for 2 cards per row with 20px gap on small screens */
-      max-width: calc(50% - 20px); /* Adjust max-width for 2 cards per row with 20px gap on small screens */
-    }
-    .navbar {
-        flex-direction: column; /* Change flex direction to stack items vertically */
-        align-items: center; /* Align items to the center of the container */
-      }
-    
-      .tag {
-        margin-bottom: 20px; /* Add margin bottom for spacing */
-        text-align: center; /* Align text to the center */
-      }
-    
-      .ul {
-        display: flex; /* Set display to flex */
-        flex-direction: column; /* Change flex direction to stack items vertically */
-        gap: 10px; /* Add gap between items */
-      }
-    
-      .ul div {
-        text-align: center; /* Align text to the center */
-      }
-  }
+export default ProductList;
